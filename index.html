@@ -7,7 +7,9 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <!-- Estilos CSS -->
     <style>
+        /* Reset y estilos base */
         * {
             margin: 0;
             padding: 0;
@@ -15,13 +17,17 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
+        /* Estilos principales */
         body {
-            background-color: #ffffff;
+            background: #ADA996;
+            background: -webkit-linear-gradient(to right, #EAEAEA, #DBDBDB, #F2F2F2, #ADA996);
+            background: linear-gradient(to right, #EAEAEA, #DBDBDB, #F2F2F2, #ADA996);
             color: #333333;
             padding: 2rem;
             max-width: 800px;
             margin: 0 auto;
             transition: background-color 0.3s;
+            min-height: 100vh;
         }
 
         .container {
@@ -29,7 +35,10 @@
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             padding: 2rem;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 4rem);
         }
 
         h1 {
@@ -63,7 +72,10 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         button:hover {
@@ -72,6 +84,8 @@
 
         .shopping-list {
             list-style: none;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .item {
@@ -109,13 +123,16 @@
         }
 
         .history-container {
-            margin-top: 2rem;
+            margin-top: 3rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: inherit;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f0f0f0;
         }
 
-        .history-toggle {
+        .history-toggle, .complete-all-button {
             background: none;
             border: none;
             color: #666666;
@@ -129,9 +146,23 @@
             transition: all 0.3s ease;
         }
 
-        .history-toggle:hover {
-            background-color: #000000;
-            color: #ffffff;
+        .history-toggle:hover, .complete-all-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .complete-all-button {
+            background-color: #56ab2f;
+            color: white;
+            margin-left: 1rem;
+            font-weight: bold;
+        }
+
+        .complete-all-button:hover {
+            background-color: #3b7b1f;
+        }
+
+        body.dark-mode .complete-all-button:hover {
+            color: white;
         }
 
         .history-list {
@@ -170,7 +201,7 @@
             cursor: pointer;
             padding: 8px;
             border-radius: 4px;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
         }
 
         .menu-dots-button:hover {
@@ -198,11 +229,15 @@
             padding: 10px 15px;
             color: #666666;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
         }
 
         .menu-item:hover {
             background-color: #f5f5f5;
+        }
+
+        .menu-item.reset:hover {
+            color: #ff3b30;
         }
 
         .user-container {
@@ -235,12 +270,14 @@
 
         /* Estilos para el modo oscuro */
         body.dark-mode {
-            background-color: #1a1a1a;
+            background: #232526;
+            background: -webkit-linear-gradient(to right, #414345, #232526);
+            background: linear-gradient(to right, #414345, #232526);
         }
 
         body.dark-mode .container {
-            background-color: #2d2d2d;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            background-color: #1a1a1a;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
         body.dark-mode h1,
@@ -260,6 +297,23 @@
 
         body.dark-mode .history-item {
             color: #999999;
+        }
+
+        body.dark-mode button {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        body.dark-mode .history-toggle,
+        body.dark-mode .menu-dots-button {
+            background-color: transparent;
+            color: #ffffff;
+        }
+
+        body.dark-mode .history-toggle:hover,
+        body.dark-mode .menu-dots-button:hover {
+            background-color: #ffffff;
+            color: #000000;
         }
 
         /* Estilos para el switch */
@@ -307,16 +361,136 @@
         body.dark-mode .switch-label {
             color: #ffffff;
         }
+
+        /* Estilos móviles */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .switch-label {
+                display: none;
+            }
+
+            button.add-button {
+                padding: 0.8rem;
+                width: 44px;
+                height: 44px;
+            }
+
+            button.add-button span {
+                display: none;
+            }
+
+            button.add-button::after {
+                content: '➕';
+                font-size: 1.2rem;
+            }
+
+            .history-container {
+                position: sticky;
+                bottom: 0;
+                padding-bottom: 1rem;
+                margin-bottom: -1rem;
+            }
+        }
+
+        /* Estilos para el contenedor Pop-up */
+        .popup-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .popup-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .popup-content p {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .popup-content button {
+            background-color: #000000;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: block;
+            margin: 1rem auto 0;
+        }
+
+        .popup-content button:hover {
+            background-color: #333333;
+        }
+
+        body.dark-mode .popup-content {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        body.dark-mode .popup-content button {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        body.dark-mode .popup-content button:hover {
+            background-color: #3d3d3d;
+        }
     </style>
 </head>
 <body>
+    <!-- Pop-up container -->
+    <div id="popupContainer" class="popup-container">
+        <div class="popup-content">
+            <h2>¿Cómo funciona?</h2>
+            <p>1. Eres un pollete.</p>
+            <p>2. Pon tu nombre</p>
+            <p>3. Añade lo que hay que comprar.</p>
+            <p>4. Cuando lo compres, dale al check.</p>
+            <p>5. Antay si no lo entiendes eres un tolai.</p>
+            <button onclick="closePopup()">va brodi entiendo</button>
+        </div>
+    </div>
+
+    <!-- Estructura HTML -->
     <div class="container">
         <div class="header-container">
             <h1>Lista de la compra - Linkeli</h1>
             <div class="menu-dots">
                 <button class="menu-dots-button" onclick="toggleMenu()">⋮</button>
                 <div class="menu-content" id="menuContent">
-                    <div class="menu-item" onclick="resetHistory()">Reset historial</div>
+                    <div class="menu-item reset" onclick="resetHistory()">Reset historial</div>
                 </div>
             </div>
         </div>
@@ -329,17 +503,21 @@
         
         <div class="input-container">
             <input type="text" id="newItem" placeholder="Añadir nuevo artículo...">
-            <button onclick="addItem()">Añadir</button>
+            <button onclick="addItem()" class="add-button">
+                <span>Añadir</span>
+            </button>
         </div>
 
         <ul id="shoppingList" class="shopping-list"></ul>
 
         <div class="history-container">
             <button class="history-toggle" onclick="toggleHistory()">
-                Historial de compras ▼
+                Historial ▼
+            </button>
+            <button class="complete-all-button" onclick="completeAllItems()">
+                Todo comprado ✔
             </button>
             <div class="switch-container" onclick="toggleDarkMode()">
-                <span class="switch-label">Modo oscuro</span>
                 <div class="switch" id="darkModeSwitch"></div>
             </div>
         </div>
@@ -362,6 +540,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // Variables globales
         let shoppingItems = [];
         let historyItems = [];
         let userName = localStorage.getItem('userName') || '';
@@ -383,6 +562,17 @@
             document.getElementById('darkModeSwitch').classList.add('active');
         }
 
+        // Mostrar pop-up si no hay nombre de usuario guardado
+        if (!userName && !localStorage.getItem('popupShown')) {
+            document.getElementById('popupContainer').style.display = 'flex';
+            localStorage.setItem('popupShown', 'true');
+        }
+
+        function closePopup() {
+            document.getElementById('popupContainer').style.display = 'none';
+        }
+
+        // Funciones principales
         function saveData() {
             db.ref('shoppingList').set({
                 items: shoppingItems,
@@ -393,6 +583,10 @@
         function updateUserName(name) {
             userName = name;
             localStorage.setItem('userName', userName);
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
         function renderLists() {
@@ -429,10 +623,18 @@
         function addItem() {
             const input = document.getElementById('newItem');
             const value = input.value.trim();
+            const userNameInput = document.getElementById('userName');
+            
+            if (!userNameInput.value.trim()) {
+                alert('Por favor, introduce tu nombre antes de añadir productos');
+                userNameInput.focus();
+                return;
+            }
             
             if (value) {
+                const capitalizedValue = capitalizeFirstLetter(value);
                 const newItem = {
-                    text: value,
+                    text: capitalizedValue,
                     author: userName || 'Anónimo'
                 };
                 shoppingItems.push(newItem);
@@ -440,6 +642,17 @@
                 saveData();
             }
         }
+
+        // Añadir validación al campo de usuario
+        document.getElementById('userName').addEventListener('change', function(e) {
+            const value = e.target.value.trim();
+            if (!value) {
+                alert('El nombre de usuario no puede estar vacío');
+                e.target.focus();
+                return;
+            }
+            updateUserName(value);
+        });
 
         function checkItem(index) {
             const item = document.querySelectorAll('.item')[index];
@@ -450,6 +663,14 @@
                 shoppingItems.splice(index, 1);
                 saveData();
             }, 500);
+        }
+
+        function completeAllItems() {
+            shoppingItems.forEach((item, index) => {
+                historyItems.push(item);
+            });
+            shoppingItems = [];
+            saveData();
         }
 
         function toggleHistory() {
@@ -474,6 +695,14 @@
             toggleMenu();
         }
 
+        // Ajustar altura en móvil
+        function adjustMobileHeight() {
+            if (window.innerWidth <= 768) {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            }
+        }
+
         // Cerrar menú al hacer clic fuera
         window.onclick = function(event) {
             if (!event.target.matches('.menu-dots-button')) {
@@ -492,6 +721,10 @@
 
         // Inicializar nombre de usuario
         document.getElementById('userName').value = userName;
+
+        // Event listeners para el responsive
+        window.addEventListener('resize', adjustMobileHeight);
+        window.addEventListener('load', adjustMobileHeight);
 
         // Cargar datos iniciales
         db.ref('shoppingList').once('value').then((snapshot) => {
