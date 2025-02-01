@@ -401,6 +401,11 @@
                 padding-bottom: 1rem;
                 margin-bottom: -1rem;
             }
+            
+            .complete-all-button {
+        font-size: 0,2rem; /* Ajusta el tamaño de la fuente */
+        padding: 5px 12px; /* Ajusta el tamaño del botón */
+    }
         }
 
         /* Estilos para el contenedor Pop-up */
@@ -512,7 +517,7 @@
 
         <div class="history-container">
             <button class="history-toggle" onclick="toggleHistory()">
-                Historial ▼
+                 ▼
             </button>
             <button class="complete-all-button" onclick="completeAllItems()">
                 Todo comprado ✔
@@ -666,11 +671,18 @@
         }
 
         function completeAllItems() {
-            shoppingItems.forEach((item, index) => {
-                historyItems.push(item);
+            const items = document.querySelectorAll('.item');
+            items.forEach((item) => {
+                item.classList.add('completing');
             });
-            shoppingItems = [];
-            saveData();
+
+            setTimeout(() => {
+                shoppingItems.forEach((item) => {
+                    historyItems.push(item);
+                });
+                shoppingItems = [];
+                saveData();
+            }, 500);
         }
 
         function toggleHistory() {
